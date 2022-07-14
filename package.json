@@ -1,0 +1,25 @@
+{
+  "name": "ww-cli",
+  "version": "0.0.1",
+  "description": "a cli for umi-max",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hedongjie123/ww-cli.git"
+  },
+  "keywords": [
+    "ww-cli",
+    "umi",
+    "react",
+    "vue"
+  ],
+  "author": "hw",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hedongjie123/ww-cli/issues"
+  },
+  "homepage": "https://github.com/hedongjie123/ww-cli#readme"
+}

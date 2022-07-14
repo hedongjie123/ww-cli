@@ -1,0 +1,12 @@
+1.clone(自动对比比较新版本);
+2.upDate(当前项目自动更新对应的模版配置);
+3.addTemp(添加自定义模版)；
+
+命令：
+ create dir
+ up dirPath (默认当前目录)
+ temp -add/del/use/list
+      -name(json name)
+      -doc(json doc)
+      filePath (当前模版路径/支持json 格式{name:"xxxx",doc:"xxx模版",path:"模版路径"},支持文件夹，默认ww.json,ww.tmp)
+
