@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": false,
+    "alwaysStrict": false,
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "module": "ESNext",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Node",
+    "strict": true,
+    "types": ["node"],
+    "target": "ESNext",
+    "outDir": "./bin",
+    "declaration": false,//不输出.d文件
+    "allowJs": true,
+    "lib": ["es5", "es2015", "es2016", "es2017", "es2018", "dom"],
+    "typeRoots": ["./node_modules/@types/"],
+    "paths": {
+      "@/*": ["./com/*"]
+    }
+  },
+  "include": ["com/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.css", "**/*.less"]
+}
