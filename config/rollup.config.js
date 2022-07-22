@@ -6,8 +6,12 @@ const { nodeResolve } = require('@rollup/plugin-node-resolve');
 const commonjs = require('@rollup/plugin-commonjs');
 const babelConfig=require("./babel.config");
 const rollupAddHeader=require("./plugins/rolluoAddHeader");
+const pluginJson=require('@rollup/plugin-json')
 const outputDir=path.resolve();
 const inputDir=path.resolve("./com");
+const binDir=path.join(outputDir,"./bin");
+const libDir=path.join(outputDir,"./lib");
+
 export default {
     input:{
         ww:path.join(inputDir,"./ww.ts"),
@@ -31,14 +35,15 @@ export default {
     ],
     plugins:[
         rollupAddHeader(),
-        // clear({
-        //     targets: [outputDir],
-        // }),
+        clear({
+            targets: [binDir,libDir],
+        }),
         typescript(),
         babel(babelConfig),
         nodeResolve({
             resolveOnly: ['node_modules'], //定义为模块
         }),
-        commonjs()//CommonJS和npm
+        commonjs(),//CommonJS和npm
+        pluginJson()
     ]
 }

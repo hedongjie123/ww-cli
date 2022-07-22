@@ -1,7 +1,6 @@
 module.exports = {
     exclude: 'node_modules/**',
     extensions: ['.ts', '.js'],
-    babelHelpers: 'runtime',
     "presets": [
         [
             "@babel/preset-env",
@@ -14,12 +13,6 @@ module.exports = {
         ]
     ],
     "plugins": [
-        ["@babel/plugin-proposal-class-properties", { "loose": false }],
-        [
-            "@babel/plugin-transform-runtime",
-            {
-                "corejs": 3
-            }
-        ]
+        ["@babel/plugin-proposal-class-properties", { "loose": false }]
     ]
 }
