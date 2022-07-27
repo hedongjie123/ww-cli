@@ -4,17 +4,17 @@ import download from 'download-git-repo';
 import path from 'path';
 import * as logger from '../util/logger';
 import ora from 'ora';
-import {clearDirInquirer, tempTypeInquirer, upCacheDirInquirer} from "../util/inquirers";
+import {clearDirInquirer, tempTypeInquirer, upCacheDirInquirer} from "../inquirers/initInquirers";
 import fs from 'fs';
 import {clearDir} from "../util/fsUtil";
-
+import chalk from 'chalk';
 program
-    .usage('<project-name>');
-
-program.parse(process.argv);
+    .usage('<project-name> [options]')
+    .option("-h, --help","init a template for your games")
 
 class templateInit {
      constructor() {
+         program.parse(process.argv);
          this.init();
      }
      cachePath=path.join(__dirname,"..");// cli path to save template
@@ -23,7 +23,8 @@ class templateInit {
      targetDirPath="";
      repo="";
      async init(){
-         const dirName=program.args[0]||"ww-admin-temp";
+         this.help();
+         const dirName=program.args[0];
          const {tempType}=await tempTypeInquirer();
          this.repo=gitRepo[tempType];
          this.cacheDirPath=path.join(this.cachePath,`tmp-${tempType}`);
@@ -33,7 +34,19 @@ class templateInit {
          if (!isEmptyDir){
              await this.clearTargetDir(dirName);
          }
-     };
+    };
+    help(){
+        const {help}=program.opts();
+        if (help||program.args.length<1){
+            console.log('  Examples:')
+            console.log()
+            console.log(chalk.gray('    # create a new project template'))
+            console.log('    $ ww init my-project')
+            console.log()
+            console.log(chalk.gray('    # create a new project straight from a github template'))
+            process.exit(0);
+        }
+    }
     async startControl(tempType:string){
           const isUp=await this.clearCacheDir(tempType);
           if (!isUp){

@@ -15,7 +15,8 @@ const libDir=path.join(outputDir,"./lib");
 export default {
     input:{
         ww:path.join(inputDir,"./ww.ts"),
-        "ww-init":path.join(inputDir,"./ww-init.ts")
+        "ww-init":path.join(inputDir,"./ww-init.ts"),
+        "ww-add":path.join(inputDir,"./ww-add.ts")
     },
 
     output:[
