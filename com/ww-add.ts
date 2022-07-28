@@ -2,9 +2,10 @@ import {program} from "commander";
 import chalk from 'chalk';
 import {error, success} from "../util/logger";
 import pathUtil from 'path';
-import {sameTempNameInquirer} from "../inquirers/addInquirers";
+import {inputNameInquirer, sameTempNameInquirer} from "../inquirers/addInquirers";
 import paths from '../data/paths';
 import fs from 'fs';
+import {safeRemoveFile} from "../util/fsUtil";
 
 type FileControlType="write"|"overwrite"|"rename"|"exit";
 type FileControlModel=Record<FileControlType,VoidFunction>;
@@ -34,8 +35,8 @@ class templateAdd{
     tempConfig:Record<string, any>={};//原始配置文件
     fileControl:FileControlModel={
         write:this.writeTemp.bind(this),
-        overwrite:this.overwriteTemp,
-        rename:this.renameTemp,
+        overwrite:this.overwriteTemp.bind(this),
+        rename:this.renameTemp.bind(this),
         exit:this.exit
     };
     constructor() {
@@ -51,9 +52,8 @@ class templateAdd{
       this.path=path;//模版路径
       this.ext=ext;//模版后缀名
       this.fileName=fileName;
-      const sameFileResult=await this.checkSameName();
-      this.fileControl[sameFileResult]();
-      success("success:add a template!")
+      const {nameType}=await this.checkSameName();
+      this.fileControl[nameType]();
     }
     readTempConfig(){
        const tempConfigStr=fs.readFileSync(paths.tempLocalJson).toString();
@@ -61,7 +61,7 @@ class templateAdd{
     }
     async checkSameName(){
        if (!this.tempConfig[this.name]){
-          return "write";
+          return {nameType:"write"};
        };
        return sameTempNameInquirer();//如果有重名
     }
@@ -78,12 +78,21 @@ class templateAdd{
        const fileName=this.name+this.ext;
        fs.writeFileSync(pathUtil.join(paths.tempLocal,fileName),fileContent);
        fs.writeFileSync(paths.tempLocalJson,JSON.stringify(newWWJson));
+       success("success:add a template!")
     }
     overwriteTemp(){
-
+       const itemConfig=this.tempConfig[this.name];
+       const {fileName}=itemConfig;
+       const ext=pathUtil.extname(fileName);
+       const filePath=pathUtil.join(paths.tempLocal,`${this.name}${ext}`);
+       safeRemoveFile(filePath);
+       this.writeTemp();
     }
-    renameTemp(){
-
+    async renameTemp(){
+        const {tempName}=await inputNameInquirer();
+        this.name=tempName;
+        const {nameType}=await this.checkSameName();
+        this.fileControl[nameType]();
     }
     exit(){
         process.exit(0);

@@ -14,3 +14,15 @@ export const sameTempNameInquirer=()=>{
         }
     ]);
 }
+export const inputNameInquirer=()=>{
+    return inquirer.prompt([
+        {
+            type:"input",
+            name:"tempName",
+            message:"please input a template new name!",
+            validate(input: any){
+               return input?.trim()!=="";
+            }
+        }
+    ]);
+}

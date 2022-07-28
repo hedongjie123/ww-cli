@@ -12,7 +12,9 @@ export const clearDir=(path:string)=>{
     fs.rmdirSync(path);
 };
 
-export const writeFile=(path:string,content:string)=>{
-     fs.writeFileSync(path,content)
+export const safeRemoveFile=(path:string)=>{
+    const hasFile=fs.existsSync(path);
+    if (hasFile){
+        fs.unlinkSync(path);
+    }
 }
-
