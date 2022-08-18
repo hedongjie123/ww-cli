@@ -1,5 +1,5 @@
 /** @format */
 
-import {program} from 'commander'
+import { program } from 'commander';
 
-program.usage('<tmp-name>').option('-c, --check', 'check template')
+program.usage('<tmp-name>').option('-c, --check', 'check template');
