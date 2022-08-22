@@ -1,5 +1,4 @@
 {
   "test": { "doc": "测试模版", "fileName": "index.ts" },
-  "uu": { "doc": "测试模版", "fileName": "index.ts" },
   "add": { "doc": "测试模版", "fileName": "index.ts" }
 }

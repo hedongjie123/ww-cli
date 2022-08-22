@@ -42,11 +42,12 @@ class templateModify extends TempChangeHelper {
   }
   writeTempLocalFile(localJson: Record<string, any>, fileName: string, filePath: string) {
     const fileContent = fs.readFileSync(filePath); // 读取文件
-    const modifyItemFile = this.tempConfig[this.oldTempName];
+    const oldTempName: string = this.oldTempName as string;
+    const modifyItemFile = this.tempConfig[oldTempName];
     const { fileName: modifyFileName } = modifyItemFile;
     const ext = pathUtil.extname(modifyFileName);
-    Reflect.deleteProperty(localJson, this.oldTempName); //删除原有模版
-    fs.unlinkSync(pathUtil.join(paths.tempLocal, this.oldTempName + ext));
+    Reflect.deleteProperty(localJson, oldTempName); //删除原有模版
+    fs.unlinkSync(pathUtil.join(paths.tempLocal, oldTempName + ext));
     fs.writeFileSync(pathUtil.join(paths.tempLocal, fileName), fileContent);
     fs.writeFileSync(paths.tempLocalJson, JSON.stringify(localJson));
   }
