@@ -17,13 +17,13 @@ program
   .option('-h, --help', 'modify a template for your local repository');
 
 class templateModify extends TempChangeHelper {
+  oldTempName: string | undefined;
   constructor() {
     super();
     program.parse(process.argv);
     this.oldTempName = program.args[0];
     this.init();
   }
-  oldTempName: string | undefined;
   async init() {
     this.help();
     this.optionsProvider();
