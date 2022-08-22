@@ -32,6 +32,7 @@ class TempChangeHelper extends Helper {
     rename: this.renameTemp.bind(this),
     exit: this.exit,
   };
+
   constructor() {
     super();
     this.readTempConfig();
@@ -52,9 +53,9 @@ class TempChangeHelper extends Helper {
     this.tempConfig = this.initTempConfig(JSON.parse(tempConfigStr));
   } //获取本地默认配置
   public getOptions() {
-    const { config, doc, path } = program.opts<OpsModel>();
     const tmpName = program.args[0];
-    const { name = tmpName, doc: tmpDoc = doc, path: tmpPath = path } = this.getConfig(config);
+    const { config, doc, path, name: opName = tmpName } = program.opts<OpsModel>();
+    const { name = opName, doc: tmpDoc = doc, path: tmpPath = path } = this.getConfig(config);
     if (!tmpPath) {
       //没有模版路径
       error('--path options is required');
@@ -83,10 +84,10 @@ class TempChangeHelper extends Helper {
     };
   }
   protected async mkFileControl() {
-    const { nameType } = await this.checkSameName();
+    const { nameType } = await this.checkName();
     this.fileControl[nameType]();
-  }
-  protected checkSameName() {
+  } //流程控制
+  protected checkName(): any {
     if (!this.tempConfig[this.name]) {
       return { nameType: 'write' };
     }
@@ -114,7 +115,7 @@ class TempChangeHelper extends Helper {
     };
   } //如果没有名称默认文件名称
   protected writeTemp() {
-    const newWWJson = {
+    const newWWJson: Record<string, any> = {
       ...this.tempConfig,
       [this.name]: {
         doc: this.doc,
@@ -122,11 +123,14 @@ class TempChangeHelper extends Helper {
       },
     };
     const filePath = this.path as string;
-    const fileContent = fs.readFileSync(filePath);
     const fileName = this.name + this.ext;
-    fs.writeFileSync(pathUtil.join(paths.tempLocal, fileName), fileContent);
-    fs.writeFileSync(paths.tempLocalJson, JSON.stringify(newWWJson));
+    this.writeTempLocalFile(newWWJson, fileName, filePath);
     this.writeTempClear();
+  }
+  protected writeTempLocalFile(localJson: Record<string, any>, fileName: string, filePath: string) {
+    const fileContent = fs.readFileSync(filePath);
+    fs.writeFileSync(pathUtil.join(paths.tempLocal, fileName), fileContent);
+    fs.writeFileSync(paths.tempLocalJson, JSON.stringify(localJson));
   }
   overwriteTemp() {
     const itemConfig = this.tempConfig[this.name];
@@ -139,7 +143,7 @@ class TempChangeHelper extends Helper {
   async renameTemp() {
     const { tempName } = await inputNameInquirer();
     this.name = tempName;
-    const { nameType } = await this.checkSameName();
+    const { nameType } = await this.checkName();
     this.fileControl[nameType]();
   }
   writeTempClear() {
