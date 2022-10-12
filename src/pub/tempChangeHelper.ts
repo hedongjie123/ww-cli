@@ -1,9 +1,11 @@
 import Helper from './helper';
 import fs from 'fs';
-import { success } from '../util/logger';
+import { error, success } from '../util/logger';
 import pathUtil from 'path';
 import { inputNameInquirer, sameTempNameInquirer } from '../inquirers/addInquirers';
-import { safeRemoveFile } from '../util/fsUtil';
+import { copyFile, parsePath, safeRemoveFile } from '../util/fsUtil';
+import chalk from 'chalk';
+import { localTemps } from '../inquirers/localTempsInquirers';
 
 type FileControlType = 'write' | 'overwrite' | 'rename' | 'exit';
 type FileControlModel = Record<FileControlType, VoidFunction>;
@@ -31,6 +33,50 @@ class TempChangeHelper extends Helper {
   initTempConfig(tempConfig) {
     return tempConfig;
   }
+  protected useNameControl() {
+    this.checkInTem();
+    this.outPutFile({
+      name: this.name,
+      path: this.path,
+    });
+  } //use命令name
+
+  protected async useCheckControl() {
+    const { name } = await localTemps(this.tempConfig);
+    this.outPutFile({
+      name,
+      path: this.path,
+    });
+  } //use命令check
+
+  protected useListControl() {
+    const keys = Object.keys(this.tempConfig);
+    if (!keys.length) {
+      error('empty templates!');
+      return;
+    }
+
+    success('templates:');
+    keys.forEach((key) => {
+      const { doc } = this.tempConfig[key];
+      console.log(chalk.gray(`name:${key},doc:${doc}`));
+    });
+  } //use命令list
+  protected checkInTem() {
+    if (!this.tempConfig[this.name]) {
+      error(`${this.name} not find`);
+      this.exit();
+      return;
+    }
+  }
+  protected outPutFile({ name, path }) {
+    const filePath = parsePath(__filename, path) as string;
+    const { fileName } = this.tempConfig[name];
+    const extname = pathUtil.extname(fileName);
+    const ioFileName = name + extname;
+    copyFile(pathUtil.join(this.tempLocalPath, ioFileName), pathUtil.join(filePath, ioFileName));
+    success(`use:${name} template success!`);
+  } //use命令生成文件
 
   protected readTempConfig() {
     const tempConfigStr = fs.readFileSync(this.tempJsonPath).toString();

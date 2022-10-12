@@ -39,7 +39,7 @@ const getDefaultTempNameInfo = (path: string, name?: string): TempInfoModel => {
 }; //如果没有名称默认文件名称
 export const getTmpFileOptions = () => {
   const tmpName = program.args[0];
-  const { config, doc, path, name: opName = tmpName } = program.opts<OpsModel>();
+  const { config, doc, path, name: opName = tmpName, check, list } = program.opts<OpsModel>();
   const { name = opName, doc: tmpDoc = doc, path: tmpPath = path } = getTmpFileConfig(config);
   if (!tmpPath) {
     return false;
@@ -54,5 +54,7 @@ export const getTmpFileOptions = () => {
     fileName: pathUtil.basename(rqPath),
     tempJsonPath: paths.tempLocalJson,
     tempLocalPath: paths.tempLocal,
+    check,
+    list,
   };
 }; //初始化模版命令参数
