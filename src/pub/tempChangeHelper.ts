@@ -6,6 +6,7 @@ import { error, success } from '../util/logger';
 import pathUtil from 'path';
 import { inputNameInquirer, sameTempNameInquirer } from '../inquirers/addInquirers';
 import { parsePath, safeRemoveFile } from '../util/fsUtil';
+console.log('fsafsa');
 export interface OpsModel {
   name?: string;
   doc?: string;
