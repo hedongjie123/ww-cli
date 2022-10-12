@@ -3,9 +3,10 @@ import fs from 'fs';
 import { error, success } from '../util/logger';
 import pathUtil from 'path';
 import { inputNameInquirer, sameTempNameInquirer } from '../inquirers/addInquirers';
-import { copyFile, parsePath, safeRemoveFile } from '../util/fsUtil';
+import { copyFile, safeRemoveFile } from '../util/fsUtil';
 import chalk from 'chalk';
 import { localTemps } from '../inquirers/localTempsInquirers';
+import path from 'path';
 
 type FileControlType = 'write' | 'overwrite' | 'rename' | 'exit';
 type FileControlModel = Record<FileControlType, VoidFunction>;
@@ -62,6 +63,26 @@ class TempChangeHelper extends Helper {
       console.log(chalk.gray(`name:${key},doc:${doc}`));
     });
   } //use命令list
+  protected rmNameControl() {
+    this.checkInTem();
+    this.rmFile(this.name);
+    success('success:removed');
+  } //rm 命令 name
+
+  protected async rmCheckControl() {
+    const { name } = await localTemps(this.tempConfig);
+    this.rmFile(name);
+    success('success:removed');
+  } //rm 命令 check
+
+  protected rmFile(name: string) {
+    const { fileName } = this.tempConfig[name];
+    const ext = pathUtil.extname(fileName);
+    fs.unlinkSync(path.join(this.tempLocalPath, `${name + ext}`));
+    Reflect.deleteProperty(this.tempConfig, name);
+    this.writeTempLocalJson(this.tempConfig);
+  } //删除文件
+
   protected checkInTem() {
     if (!this.tempConfig[this.name]) {
       error(`${this.name} not find`);
@@ -112,9 +133,11 @@ class TempChangeHelper extends Helper {
   protected writeTempLocalFile(localJson: Record<string, any>, fileName: string, filePath: string) {
     const fileContent = fs.readFileSync(filePath);
     fs.writeFileSync(pathUtil.join(this.tempLocalPath, fileName), fileContent);
+    this.writeTempLocalJson(localJson);
+  }
+  protected writeTempLocalJson(localJson: Record<string, any>) {
     fs.writeFileSync(this.tempJsonPath, JSON.stringify(localJson));
   }
-
   protected overwriteTemp() {
     const itemConfig = this.tempConfig[this.name];
     const { fileName } = itemConfig;
