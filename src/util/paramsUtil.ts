@@ -2,11 +2,13 @@ import { program } from 'commander';
 import pathUtil from 'path';
 import { parsePath } from './fsUtil';
 import paths from '../data/paths';
-interface OpsModel {
+export interface OpsModel {
   name?: string;
   doc?: string;
   path?: string;
   config?: string;
+  check?: boolean;
+  list?: boolean;
 }
 interface TempInfoModel {
   name: string;

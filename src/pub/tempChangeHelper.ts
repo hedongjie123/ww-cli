@@ -70,7 +70,7 @@ class TempChangeHelper extends Helper {
     }
   }
   protected outPutFile({ name, path }) {
-    const filePath = parsePath(__filename, path) as string;
+    const filePath = pathUtil.resolve(path);
     const { fileName } = this.tempConfig[name];
     const extname = pathUtil.extname(fileName);
     const ioFileName = name + extname;
