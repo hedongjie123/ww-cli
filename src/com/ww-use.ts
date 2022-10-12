@@ -9,12 +9,14 @@ import paths from '../data/paths';
 import { copyFile, parsePath } from '../util/fsUtil';
 import pathUtil from 'path';
 import { localTemps } from '../inquirers/localTempsInquirers';
+
 program
   .usage('<tmp-name>')
   .option('-l, --list', 'show your template list') //列出所有模版
   .option('-c, --check', 'check template') //
   .option('-p,--path <path>', 'output template path')
   .option('-h, --help', 'use template');
+
 interface OpsModel {
   check?: boolean;
   list?: boolean;
@@ -89,7 +91,7 @@ class templateUse extends Helper {
   } //选择模式
 
   writeFile(options: OpsModel) {
-    const { name, path } = options;
+    const { name = '', path } = options;
     const filePath = parsePath(__filename, path) as string;
     const { fileName } = this.tempConfig[name];
     const extname = pathUtil.extname(fileName);

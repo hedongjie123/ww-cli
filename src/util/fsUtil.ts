@@ -42,6 +42,7 @@ export const parsePath = (rootPath: string, path?: string) => {
   if (!path || pathUtil.isAbsolute(path)) {
     return path;
   } //是否是绝对路径
+
   const fatherPath = pathUtil.dirname(rootPath);
   return pathUtil.resolve(fatherPath, path);
 };
