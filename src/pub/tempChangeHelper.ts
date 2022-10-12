@@ -5,7 +5,7 @@ import { program } from 'commander';
 import { error, success } from '../util/logger';
 import pathUtil from 'path';
 import { inputNameInquirer, sameTempNameInquirer } from '../inquirers/addInquirers';
-import { safeRemoveFile } from '../util/fsUtil';
+import { parsePath, safeRemoveFile } from '../util/fsUtil';
 export interface OpsModel {
   name?: string;
   doc?: string;
@@ -79,7 +79,7 @@ class TempChangeHelper extends Helper {
     const { name, path, doc } = require(configPath);
     return {
       name,
-      path: this.parsePath(configPath, path),
+      path: parsePath(configPath, path),
       doc,
     };
   }
@@ -93,14 +93,6 @@ class TempChangeHelper extends Helper {
     }
     return sameTempNameInquirer(); //如果有重名
   }
-  protected parsePath(configPath: string, path?: string) {
-    if (!path || pathUtil.isAbsolute(path)) {
-      return path;
-    } //是否是绝对路径
-    const fatherPath = pathUtil.dirname(configPath);
-    return pathUtil.resolve(fatherPath, path);
-  }
-
   protected getDefaultTempNameInfo(path: string, name?: string): TempInfoModel {
     const ext = pathUtil.extname(path);
     if (name) {

@@ -21,6 +21,7 @@ export default {
     'ww-add': path.join(inputDir, './ww-add.ts'),
     'ww-modify': path.join(inputDir, './ww-modify.ts'),
     'ww-rm': path.join(inputDir, './ww-rm.ts'),
+    'ww-use': path.join(inputDir, './ww-use.ts'),
   },
 
   output: [

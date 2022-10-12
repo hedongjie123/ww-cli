@@ -6,11 +6,13 @@ import chalk from 'chalk';
 import { error, success } from '../util/logger';
 import fs from 'fs';
 import paths from '../data/paths';
-
+import { copyFile, parsePath } from '../util/fsUtil';
+import pathUtil from 'path';
+import { localTemps } from '../inquirers/localTempsInquirers';
 program
   .usage('<tmp-name>')
-  .option('-l, --list', 'show your template list')
-  .option('-c, --check', 'check template')
+  .option('-l, --list', 'show your template list') //列出所有模版
+  .option('-c, --check', 'check template') //
   .option('-p,--path <path>', 'output template path')
   .option('-h, --help', 'use template');
 interface OpsModel {
@@ -67,17 +69,34 @@ class templateUse extends Helper {
     });
   }
   useNameControl(options: OpsModel) {
-    const { path } = options;
+    const { path, name } = options;
     this.checkPath(path);
+    this.checkInTem(name as string);
     this.writeFile(options);
   }
+  checkInTem = (name: string) => {
+    if (!this.tempConfig[name]) {
+      error(`${name} not find`);
+      this.exit();
+      return;
+    }
+  };
   async checkControl(options: OpsModel) {
     const { path } = options;
     this.checkPath(path);
-  }
+    const { name } = await localTemps(this.tempConfig);
+    this.writeFile({ path, name });
+  } //选择模式
+
   writeFile(options: OpsModel) {
     const { name, path } = options;
-  }
+    const filePath = parsePath(__filename, path) as string;
+    const { fileName } = this.tempConfig[name];
+    const extname = pathUtil.extname(fileName);
+    const ioFileName = name + extname;
+    copyFile(pathUtil.join(paths.tempLocal, ioFileName), pathUtil.join(filePath, ioFileName));
+    success(`use:${name} template success!`);
+  } //生成文件
 
   checkPath(path?: string) {
     if (!path) {
@@ -85,7 +104,7 @@ class templateUse extends Helper {
       this.exit();
       return;
     }
-  }
+  } //检测必填参数
   print() {
     console.log('  Examples:');
     console.log();
