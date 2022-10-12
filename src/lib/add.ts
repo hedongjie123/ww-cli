@@ -14,6 +14,7 @@ class Add extends TempChangeHelper {
   constructor() {
     super();
   }
+
   initConfig(config: ConfigParams) {
     const { ext, name, fileName, path, doc, tempJsonPath, tempLocalPath } = config;
     this.name = name;
@@ -24,6 +25,7 @@ class Add extends TempChangeHelper {
     this.tempJsonPath = tempJsonPath;
     this.tempLocalPath = tempLocalPath;
   }
+
   async start() {
     this.readTempConfig();
     await this.mkFileControl();
