@@ -1,5 +1,4 @@
 {
-  "name": "add",
-  "path": "./index.ts",
-  "doc": "测试模版"
+  "name": "modify",
+  "path": "./index.ts"
 }

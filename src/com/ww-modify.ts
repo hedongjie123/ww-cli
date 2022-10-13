@@ -1,13 +1,10 @@
 /** @format */
 
 import { program } from 'commander';
-import TempChangeHelper from '../pub/tempChangeHelper';
-import fs from 'fs';
-import pathUtil from 'path';
-import paths from '../data/paths';
 import chalk from 'chalk';
-import { error, success } from '../util/logger';
-
+import { error } from '../util/logger';
+import Modify, { ModifyConfigParams } from '../lib/modify';
+import { getTmpFileOptions } from '../util/paramsUtil';
 program
   .usage('<tmp-name>')
   .option('-c, --config <config>', 'modify template config')
@@ -16,43 +13,33 @@ program
   .option('-n, --name <name>', 'modify a template for your local repository')
   .option('-h, --help', 'modify a template for your local repository');
 
-class templateModify extends TempChangeHelper {
-  oldTempName: string | undefined;
+class templateModify extends Modify {
   constructor() {
     super();
     program.parse(process.argv);
-    this.oldTempName = program.args[0];
     this.init();
   }
   async init() {
     this.help();
-    this.optionsProvider();
-    await this.mkFileControl();
+    const config = this.initParams();
+    this.initConfig(config);
+    await this.start();
   }
-  checkName() {
-    if (!this.oldTempName?.trim()) {
+  initParams(): ModifyConfigParams {
+    const tmpName = program.args[0];
+    if (!tmpName?.trim()) {
       error('must input modify template name!');
-      return { nameType: 'exit' };
+      this.exit();
     }
-    if (!this.tempConfig[this.oldTempName]) {
-      error('must input a ture template name!');
-      return { nameType: 'exit' };
+    const config = getTmpFileOptions();
+    if (!config) {
+      error('--path options is required');
+      this.exit();
     }
-    return { nameType: 'write' };
-  }
-  writeTempLocalFile(localJson: Record<string, any>, fileName: string, filePath: string) {
-    const fileContent = fs.readFileSync(filePath); // 读取文件
-    const oldTempName: string = this.oldTempName as string;
-    const modifyItemFile = this.tempConfig[oldTempName];
-    const { fileName: modifyFileName } = modifyItemFile;
-    const ext = pathUtil.extname(modifyFileName);
-    Reflect.deleteProperty(localJson, oldTempName); //删除原有模版
-    fs.unlinkSync(pathUtil.join(paths.tempLocal, oldTempName + ext));
-    fs.writeFileSync(pathUtil.join(paths.tempLocal, fileName), fileContent);
-    fs.writeFileSync(paths.tempLocalJson, JSON.stringify(localJson));
-  }
-  writeTempClear() {
-    success('success:modify a template! ');
+    return {
+      ...config,
+      modifyName: tmpName,
+    } as ModifyConfigParams;
   }
   print() {
     console.log('  Examples:');
